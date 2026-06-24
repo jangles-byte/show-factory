@@ -1,0 +1,24 @@
+# dependencies
+web/node_modules/
+.venv/
+__pycache__/
+*.pyc
+
+# web build output
+web/dist/
+
+# generated shows, assets, reference packs (all local)
+output/
+refs/
+
+# large model weights — download separately (see README)
+models/
+
+# local launcher (machine-specific paths)
+start.command
+
+# logs
+logs/
+
+# macOS
+.DS_Store

@@ -1,0 +1,45 @@
+{
+  "title": "Villa of Secrets",
+  "logline": "Two contestants circle each other in a sun-drenched villa, each playing a game they pretend they're not playing.",
+  "genre": "Reality dating (Love Island style)",
+  "tone": "Chaotic & messy (max drama)",
+  "visualStyle": "Motion comic / cutout",
+  "setting": "a sun-drenched villa on a Greek island",
+  "mode": "authored",
+  "episodeLengthMin": 1,
+  "episodesPerSeason": 8,
+  "generateNow": 1,
+  "cast": [
+    {
+      "name": "Maya",
+      "role": "the flirt",
+      "personality": "bold, playful, lives for drama",
+      "wants": "to be the center of attention",
+      "secret": "she actually has real feelings for Theo",
+      "gender": "female"
+    },
+    {
+      "name": "Liam",
+      "role": "the charmer",
+      "personality": "smooth, confident, a bit of a player",
+      "wants": "to win the game without catching feelings",
+      "secret": "he's far more insecure than he lets on",
+      "gender": "male"
+    }
+  ],
+  "episodeEngine": "each episode a new bombshell or twist shakes up the couples",
+  "seasonArc": "Maya and Liam orbit each other while bombshells test their loyalty and force their secrets out",
+  "episodes": [
+    {
+      "number": 1,
+      "title": "First Spark",
+      "premise": "Maya and Liam meet by the pool and sparks fly, but both refuse to drop their guard.",
+      "beats": [
+        "an awkward, flirty first meeting",
+        "Maya makes a bold move",
+        "Liam plays it cool to hide his nerves",
+        "a cliffhanger hint that a bombshell is arriving"
+      ]
+    }
+  ]
+}

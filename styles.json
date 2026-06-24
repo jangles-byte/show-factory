@@ -1,0 +1,38 @@
+{
+  "_comment": "Art styles for the show. Add your own: name + prompt (appended to every image), optional negative, optional lora (a .safetensors filename in ComfyUI/models/loras) + lora_weight. The planning dropdown reads this file.",
+  "styles": [
+    {
+      "name": "Archer (flat 2D spy)",
+      "prompt": "in the style of the TV show Archer, flat 2D vector animation, bold black outlines, flat cel shading, limited color palette, mid-century modern, cinematic lighting, clean",
+      "lora": null
+    },
+    {
+      "name": "Modern anime",
+      "prompt": "modern anime style, clean crisp line art, cel shading, vibrant colors, expressive eyes, studio-quality key visual, detailed background"
+    },
+    {
+      "name": "3D animated (Pixar-like)",
+      "prompt": "3D animated feature film style, soft global illumination, subsurface scattering, expressive stylized characters, polished cinematic render"
+    },
+    {
+      "name": "Watercolor storybook",
+      "prompt": "watercolor storybook illustration, soft color washes, visible paper texture, gentle hand-painted look, warm and cozy"
+    },
+    {
+      "name": "Inked comic book",
+      "prompt": "inked comic book art, bold confident linework, halftone shading, high contrast, dynamic graphic panels"
+    },
+    {
+      "name": "Claymation",
+      "prompt": "claymation stop-motion look, sculpted clay textures, handcrafted miniature set, soft studio lighting, tactile"
+    },
+    {
+      "name": "Retro 1950s cartoon (UPA)",
+      "prompt": "1950s UPA retro cartoon, flat mid-century modern shapes, limited muted palette, stylized angular design, screen-print texture"
+    },
+    {
+      "name": "Noir ink wash",
+      "prompt": "high-contrast black and white noir, heavy ink shadows, dramatic chiaroscuro lighting, moody, graphic novel"
+    }
+  ]
+}
