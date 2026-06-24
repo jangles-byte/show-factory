@@ -67,3 +67,18 @@ export interface RenderItem {
   ep: string;
   url: string;
 }
+
+export interface ComfyModels {
+  checkpoints: string[];
+  loras: string[];
+  default: string;
+  up: boolean;
+}
+
+export interface PgResult {
+  url: string;
+  seed: number;
+  checkpoint: string;
+  lora: string | null;
+  prompt: string;
+}

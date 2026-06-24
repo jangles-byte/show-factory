@@ -3,11 +3,13 @@ import ShowsPanel from "./ShowsPanel";
 import CharactersPanel from "./CharactersPanel";
 import StylesPanel from "./StylesPanel";
 import RendersPanel from "./RendersPanel";
+import PlaygroundPanel from "./PlaygroundPanel";
 
 const TABS: { id: LeftTab; label: string; icon: string }[] = [
   { id: "shows", label: "SHOWS", icon: "▤" },
   { id: "characters", label: "CAST", icon: "☺" },
   { id: "styles", label: "STYLES", icon: "✦" },
+  { id: "playground", label: "IMAGE", icon: "❖" },
   { id: "renders", label: "RENDERS", icon: "▶" },
 ];
 
@@ -39,6 +41,7 @@ export default function Sidebar() {
         {leftTab === "shows" && <ShowsPanel />}
         {leftTab === "characters" && <CharactersPanel />}
         {leftTab === "styles" && <StylesPanel />}
+        {leftTab === "playground" && <PlaygroundPanel />}
         {leftTab === "renders" && <RendersPanel />}
       </div>
     </nav>

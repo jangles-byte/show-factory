@@ -1,4 +1,4 @@
-import type { Bible, ShowSummary, StyleDef, CharacterAsset, RenderItem } from "./types";
+import type { Bible, ShowSummary, StyleDef, CharacterAsset, RenderItem, ComfyModels, PgResult } from "./types";
 
 const json = (r: Response) => r.json();
 const enc = encodeURIComponent;
@@ -30,6 +30,14 @@ export const deleteRef = (slug: string, character: string, file: string) =>
 
 // --- renders ---
 export const listRenders = (): Promise<RenderItem[]> => fetch("/renders").then(json).then((d) => d.renders || []);
+
+// --- image playground ---
+export interface GenParams {
+  prompt: string; style?: string; checkpoint?: string; lora?: string | null;
+  lora_weight?: number; negative?: string; size?: string; seed?: string;
+}
+export const getComfyModels = (): Promise<ComfyModels> => fetch("/comfy/models").then(json);
+export const generateImage = (p: GenParams): Promise<PgResult & { error?: string }> => post("/generate", p);
 export const listModels = async (): Promise<string[]> => {
   try {
     const d = await fetch("/api/tags").then(json);

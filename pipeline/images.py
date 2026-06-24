@@ -59,9 +59,9 @@ class Comfy:
         raise RuntimeError("ComfyUI returned no image")
 
 
-def _base_nodes(prompt, neg, lora, lora_w, w, h, seed, steps, cfg):
+def _base_nodes(prompt, neg, lora, lora_w, w, h, seed, steps, cfg, checkpoint=None):
     """Common checkpoint -> (optional lora) -> conditioning -> latent nodes."""
-    g = {"ckpt": {"class_type": "CheckpointLoaderSimple", "inputs": {"ckpt_name": config.CHECKPOINT}}}
+    g = {"ckpt": {"class_type": "CheckpointLoaderSimple", "inputs": {"ckpt_name": checkpoint or config.CHECKPOINT}}}
     model, clip, vae = ["ckpt", 0], ["ckpt", 1], ["ckpt", 2]
     if lora:
         g["lora"] = {"class_type": "LoraLoader", "inputs": {
@@ -86,6 +86,12 @@ def _sampler_tail(g, model, vae, seed, steps, cfg):
 
 def txt2img_graph(prompt, neg, lora, lora_w, w, h, seed, steps=28, cfg=6.5):
     g, model, vae = _base_nodes(prompt, neg, lora, lora_w, w, h, seed, steps, cfg)
+    return _sampler_tail(g, model, vae, seed, steps, cfg)
+
+
+def txt2img_graph_ex(prompt, neg, checkpoint, lora, lora_w, w, h, seed, steps=28, cfg=6.5):
+    """txt2img with an explicit checkpoint (used by the image playground)."""
+    g, model, vae = _base_nodes(prompt, neg, lora, lora_w, w, h, seed, steps, cfg, checkpoint=checkpoint)
     return _sampler_tail(g, model, vae, seed, steps, cfg)
 
 

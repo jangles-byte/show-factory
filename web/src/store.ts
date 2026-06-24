@@ -1,8 +1,9 @@
 import { create } from "zustand";
-import type { Bible, Episode, ShowSummary, StyleDef, CharacterAsset, RenderItem } from "./types";
+import type { Bible, Episode, ShowSummary, StyleDef, CharacterAsset, RenderItem, ComfyModels, PgResult } from "./types";
+import type { GenParams } from "./api";
 import * as api from "./api";
 
-export type LeftTab = "shows" | "characters" | "styles" | "renders";
+export type LeftTab = "shows" | "characters" | "styles" | "renders" | "playground";
 
 interface State {
   shows: ShowSummary[];
@@ -20,6 +21,10 @@ interface State {
   charError: string;
   styleDefs: StyleDef[];
   renders: RenderItem[];
+  comfyModels: ComfyModels | null;
+  pgImages: PgResult[];
+  pgBusy: boolean;
+  pgError: string;
 
   init: () => Promise<void>;
   loadShows: () => Promise<void>;
@@ -43,6 +48,8 @@ interface State {
   loadStyleDefs: () => Promise<void>;
   saveStyleDefs: (defs: StyleDef[]) => Promise<void>;
   loadRenders: () => Promise<void>;
+  loadComfyModels: () => Promise<void>;
+  generateImage: (p: GenParams) => Promise<void>;
 }
 
 export const useStore = create<State>((set, get) => ({
@@ -61,6 +68,10 @@ export const useStore = create<State>((set, get) => ({
   charError: "",
   styleDefs: [],
   renders: [],
+  comfyModels: null,
+  pgImages: [],
+  pgBusy: false,
+  pgError: "",
 
   async init() {
     const [shows, models, styles] = await Promise.all([api.listShows(), api.listModels(), api.getStyles()]);
@@ -149,6 +160,7 @@ export const useStore = create<State>((set, get) => ({
     if (t === "characters" && get().bible?._slug && get().characters.length === 0) get().loadCharacters();
     if (t === "styles" && get().styleDefs.length === 0) get().loadStyleDefs();
     if (t === "renders") get().loadRenders();
+    if (t === "playground" && !get().comfyModels) get().loadComfyModels();
   },
 
   async loadCharacters() {
@@ -212,5 +224,27 @@ export const useStore = create<State>((set, get) => ({
 
   async loadRenders() {
     set({ renders: await api.listRenders() });
+  },
+
+  async loadComfyModels() {
+    try {
+      set({ comfyModels: await api.getComfyModels() });
+    } catch (e: any) {
+      set({ pgError: String(e) });
+    }
+  },
+  async generateImage(p) {
+    if (!p.prompt.trim()) return;
+    set({ pgBusy: true, pgError: "" });
+    try {
+      const r = await api.generateImage(p);
+      if (r.error) set({ pgError: r.error });
+      else set({ pgImages: [r, ...get().pgImages].slice(0, 24) });
+    } catch (e: any) {
+      set({ pgError: String(e) });
+    } finally {
+      set({ pgBusy: false });
+      get().loadComfyModels(); // refresh up/down status
+    }
   },
 }));

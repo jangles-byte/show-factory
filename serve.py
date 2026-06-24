@@ -328,6 +328,52 @@ def list_renders():
     return out
 
 
+# ---------- image playground ----------
+def comfy_models():
+    """List the SDXL checkpoints + LoRAs ComfyUI can see, and whether it's running."""
+    from pipeline import config as pcfg, images as img_mod
+    def names(sub):
+        d = pcfg.COMFY_DIR / "models" / sub
+        return sorted(p.name for p in d.glob("*.safetensors")) if d.exists() else []
+    return {"checkpoints": names("checkpoints"), "loras": names("loras"),
+            "default": pcfg.CHECKPOINT, "up": img_mod.Comfy().up()}
+
+
+_PG_SIZES = {"landscape": (1280, 720), "portrait": (832, 1216), "square": (1024, 1024)}
+
+
+def playground_generate(p):
+    from pipeline import config as pcfg, images as img_mod
+    c = img_mod.Comfy()
+    if not c.up():
+        return {"error": "ComfyUI is not running. Start it (cd ~/Desktop/ComfyUI && ./.venv/bin/python main.py) then generate again."}
+    prompt = (p.get("prompt") or "").strip()
+    if not prompt:
+        return {"error": "prompt is empty"}
+    style_prompt, neg = "", pcfg.NEG_PROMPT
+    if p.get("style"):
+        st = pcfg.resolve_style(p["style"])
+        style_prompt = st.get("prompt", "")
+        if st.get("negative"):
+            neg = st["negative"]
+    full = f"{prompt}, {style_prompt}" if style_prompt else prompt
+    neg = p.get("negative") or neg
+    checkpoint = p.get("checkpoint") or pcfg.CHECKPOINT
+    lora = p.get("lora") or None
+    lora_w = float(p.get("lora_weight", pcfg.LORA_WEIGHT))
+    w, h = _PG_SIZES.get(p.get("size", "landscape"), _PG_SIZES["landscape"])
+    seed = int(p["seed"]) if str(p.get("seed", "")).strip() else (int.from_bytes(os.urandom(4), "big") & 0x7FFFFFFF)
+    graph = img_mod.txt2img_graph_ex(full, neg, checkpoint, lora, lora_w, w, h, seed)
+    pid = c.queue(graph)
+    hist = c.wait(pid)
+    pdir = ROOT / "output" / "_playground"
+    pdir.mkdir(parents=True, exist_ok=True)
+    fname = f"{int(time.time())}_{seed}.png"
+    c.save_first_image(hist, str(pdir / fname))
+    return {"ok": True, "url": f"/output/_playground/{fname}", "seed": seed,
+            "checkpoint": checkpoint, "lora": lora, "prompt": prompt}
+
+
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *a, **k):
         super().__init__(*a, directory=DIR, **k)
@@ -409,11 +455,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             except Exception as e:
                 self._send_json({"error": str(e)}, 500)
         elif self.path in ("/show/delete", "/characters/upload", "/characters/lock",
-                           "/characters/delete-ref", "/styles/save"):
+                           "/characters/delete-ref", "/styles/save", "/generate"):
             try:
                 length = int(self.headers.get("Content-Length", 0))
                 p = json.loads(self.rfile.read(length) or b"{}")
-                if self.path == "/show/delete":
+                if self.path == "/generate":
+                    res = playground_generate(p)
+                elif self.path == "/show/delete":
                     res = delete_show(p.get("slug", ""))
                 elif self.path == "/characters/upload":
                     res = upload_refs(p.get("slug", ""), p.get("character", ""), p.get("images", []))
@@ -445,6 +493,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self._send_json({"shows": list_shows()})
         elif self.path == "/renders":
             self._send_json({"renders": list_renders()})
+        elif self.path == "/comfy/models":
+            self._send_json(comfy_models())
         elif self.path.startswith("/characters"):
             q = parse_qs(urlparse(self.path).query)
             slug = (q.get("slug") or [""])[0]

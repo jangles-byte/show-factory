@@ -7,6 +7,7 @@ export default function ShowsPanel() {
   const [style, setStyle] = useState("");
   const [cast, setCast] = useState(3);
   const [eps, setEps] = useState(1);
+  const [lengthMin, setLengthMin] = useState(5);
   const [confirm, setConfirm] = useState<string | null>(null);
 
   return (
@@ -30,11 +31,12 @@ export default function ShowsPanel() {
         <div className="row">
           <label className="tiny">cast<input type="number" min={1} max={12} value={cast} onChange={(e) => setCast(+e.target.value)} /></label>
           <label className="tiny">eps<input type="number" min={1} max={20} value={eps} onChange={(e) => setEps(+e.target.value)} /></label>
+          <label className="tiny">min<input type="number" min={1} max={30} value={lengthMin} onChange={(e) => setLengthMin(+e.target.value)} /></label>
         </div>
         <button
           className="go full"
           disabled={!brief.trim()}
-          onClick={() => buildFromBrief(brief, { visualStyle: style || undefined, castSize: cast, generateNow: eps })}
+          onClick={() => buildFromBrief(brief, { visualStyle: style || undefined, castSize: cast, generateNow: eps, episodeLengthMin: lengthMin })}
         >
           ✦ BUILD SHOW
         </button>
